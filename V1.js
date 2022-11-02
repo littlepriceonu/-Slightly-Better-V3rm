@@ -169,13 +169,32 @@ By: littlepriceonu#0001`, "background: linear-gradient(to right, #ab0000, #0f0d0
 
         var avatar = document.querySelector("#panel > div.user_avatar")
         var avatarimage = document.querySelector("#panel > div.user_avatar > img")
-        avatarimage.src = "https://v3rmillion.net/uploads/avatars/avatar_" + uid + ".gif"
-        avatarimage.style.cursor = "pointer"
-        avatarimage.onclick = () => {
-            openInCurrentTab("https://v3rmillion.net/member.php?action=profile&uid=" + uid)
+
+        function setUpAvatar(url) {
+            avatarimage.src = url
+            avatarimage.style.cursor = "pointer"
+            avatarimage.onclick = () => {
+                openInCurrentTab("https://v3rmillion.net/member.php?action=profile&uid=" + uid)
+            }
+    
+            avatar.classList.remove("hidden")   
         }
 
-        avatar.classList.remove("hidden")
+        fetch("https://v3rmillion.net/uploads/avatars/avatar_" + uid + ".gif").then((data) => {
+            if (data.ok) setUpAvatar("https://v3rmillion.net/uploads/avatars/avatar_" + uid + ".gif")
+        })
+
+
+
+        fetch("https://v3rmillion.net/uploads/avatars/avatar_" + uid + ".jpg").then((data) => {
+            if (data.ok) setUpAvatar("https://v3rmillion.net/uploads/avatars/avatar_" + uid + ".jpg")
+        })
+        
+
+
+        fetch("https://v3rmillion.net/uploads/avatars/avatar_" + uid + ".png").then((data) => {
+            if (data.ok) setUpAvatar("https://v3rmillion.net/uploads/avatars/avatar_" + uid + ".png")
+        })
 
         document.querySelector("#footer > ul:nth-child(1) > h2").innerText = "Important"
         document.querySelector("#footer > ul:nth-child(2) > h2").innerText = "Other Links"
@@ -244,8 +263,8 @@ By: littlepriceonu#0001`, "background: linear-gradient(to right, #ab0000, #0f0d0
         // make the no alerts text look better
         injectCSS(".alert-row__no-alerts {display:flex; justify-content:center; padding-top: 10px; padding-bottom: 10px;}", true)
 
-        // black scroll bar (not work)
-        //injectCSS("::-webkit-scrollbar-track { color: transparent !important; } ::-webkit-scrollbar-thumb { background: #374151 !important; }", true)
+        // black scroll bar
+        injectCSS("body::-webkit-scrollbar { width: 16px; height: 16px;} body::-webkit-scrollbar-track { background-color: transparent !important; }  body::-webkit-scrollbar-thumb { background-color: #262323 !important; } body::-webkit-scrollbar-thumb:hover { background-color: #4f4e4e !important; }        ", true)
 
         // no bottom rounded (no work)
         //injectCSS('.tborder tbody tr:last-child>td:first-child {border-bottom-right-radius: 0;}', true)
