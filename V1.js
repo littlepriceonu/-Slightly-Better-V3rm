@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         (Slightly) Better V3rm
 // @namespace    https://github.com/littlepriceonu/-Slightly-Better-V3rm
-// @version      1
+// @version      1.1
 // @description  Better Styling For V3rmillion
 // @author       littlepriceonu#0001
 // @match        *://*.v3rmillion.net/*
