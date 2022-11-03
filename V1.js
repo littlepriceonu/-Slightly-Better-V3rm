@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         (Slightly) Better V3rm
 // @namespace    https://github.com/littlepriceonu/-Slightly-Better-V3rm
-// @version      1.1
+// @version      1.11
 // @description  Better Styling For V3rmillion
 // @author       littlepriceonu#0001
 // @match        *://*.v3rmillion.net/*
@@ -69,7 +69,7 @@ By: littlepriceonu#0001`, "background: linear-gradient(to right, #ab0000, #0f0d0
         if (document.location.href.indexOf("v3rmillion.net/member.php?") > -1 && !checkNoPerms()) {
             var lease, synapse, x= false
             document.querySelector("#content > table > tbody > tr > td:nth-child(3) > table:nth-child(3) > tbody > tr:nth-child(2) > td").childNodes.forEach((el) => {
-                if (el.textContent.toLowerCase().indexOf("lease") > -1) lease = true
+                if (el.textContent.toLowerCase().indexOf("lease") > -1 || (el.textContent.toLowerCase().indexOf("leasing") > -1)) lease = true
                 if (el.textContent.toLowerCase().indexOf("synapse") > -1) synapse = true
                 if (el.textContent.toLowerCase().indexOf("x") > -1) x = true
             })
