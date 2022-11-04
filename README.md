@@ -8,4 +8,4 @@ Looking at v3rm alot for roblox stuff, I figured that I might as well take a sho
 
 ## check it out and see if you like it!
 
-Script [Here](raw.githubusercontent.com/littlepriceonu/-Slightly-Better-V3rm/main/V1.js)
+Script [Here](https://raw.githubusercontent.com/littlepriceonu/-Slightly-Better-V3rm/main/V1.js)

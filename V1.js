@@ -13,6 +13,7 @@
 // ==/UserScript==
 
 // Todo
+// Make a thing that warns the user if the script is 
 // Nothing rn but I'll find something.
 
 (function() {
