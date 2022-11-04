@@ -1,24 +1,23 @@
 // ==UserScript==
 // @name         (Slightly) Better V3rm
 // @namespace    https://github.com/littlepriceonu/-Slightly-Better-V3rm
-// @version      1.11
+// @version      1.2
 // @description  Better Styling For V3rmillion
 // @author       littlepriceonu#0001
 // @match        *://*.v3rmillion.net/*
 // @exclude      *://*.v3rmillion.net/legal.html
 // @exclude      *://*.v3rmillion.net/siterules.php
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=v3rmillion.net
-// @grant        none
+// @grant        GM_setClipboard
 // @updateURL    raw.githubusercontent.com/littlepriceonu/-Slightly-Better-V3rm/main/V1.js
 // @downloadURL  raw.githubusercontent.com/littlepriceonu/-Slightly-Better-V3rm/main/V1.js
 // ==/UserScript==
 
+// Todo
+// Nothing rn but I'll find something.
+
 (function() {
     'use strict';
-
-    // steal the user's id from the "My Profile" link
-    var param = new URLSearchParams(document.querySelector("#panel > div.ddm_anchor > div > a:nth-child(1)").href)
-    var uid = param.get('uid')
 
     console.log(`%c(slightly) Better V3rm 
 By: littlepriceonu#0001`, "background: linear-gradient(to right, #ab0000, #0f0d0d); color:#00abab")
@@ -51,6 +50,27 @@ By: littlepriceonu#0001`, "background: linear-gradient(to right, #ab0000, #0f0d0
         start()
     }
 
+    function getAllNonSelfPosts() {
+        let ReturnPosts = []
+
+        document.querySelectorAll(".post").forEach(post => {
+            if (extractUIDfromPost(post) != uid) {
+                ReturnPosts.push(post)
+            }
+        })
+
+        return ReturnPosts
+    }
+
+    function extractUIDfromPost(postElement) {
+        var prams = new URLSearchParams(document.querySelector("#" +postElement.id+ " > .post_author > .author_information > strong > span > a").href)
+        return prams.get("uid")
+    }
+
+    function extractUsernamefromPost(postElement) {
+        return document.querySelector("#" +postElement.id+ " > .post_author > .author_information > strong > span > a > span").textContent
+    }
+
     function checkNoPerms() {
         var has = false;
 
@@ -64,6 +84,12 @@ By: littlepriceonu#0001`, "background: linear-gradient(to right, #ab0000, #0f0d0
     }
 
     function start() {
+
+        // steal the user's id from the "My Profile" link
+        var param = new URLSearchParams(document.querySelector("#panel > div.ddm_anchor > div > a:nth-child(1)").href)
+        const uid = param.get('uid')
+        window.uid = uid
+
         // page specific features
         // little easter egg
         if (document.location.href.indexOf("v3rmillion.net/member.php?") > -1 && !checkNoPerms()) {
@@ -97,6 +123,107 @@ By: littlepriceonu#0001`, "background: linear-gradient(to right, #ab0000, #0f0d0
             // Dont Do Anything, isn't really a point to lmao
         }
 
+        // replace the Direct link text with a few icons, remove the rate buttons if the post is yours
+        if (document.location.href.indexOf("v3rmillion.net/showthread.php?") > -1 && !checkNoPerms()) {
+
+            // remove the Direct Link Test and replace with a few images
+            document.querySelectorAll(".post").forEach(post => {
+                var link = document.createElement("img")
+                link.src = "https://cdn2.iconfinder.com/data/icons/pittogrammi/142/95-512.png"
+                link.style.width = "23px"
+                link.style.height = "20px"
+                link.style.filter = "invert(50%)"
+                link.style.cursor = "pointer"
+            
+    
+                var copy = document.createElement("img")
+                copy.src = "https://cdn-icons-png.flaticon.com/512/1621/1621635.png"
+                copy.style.width = "23px"
+                copy.style.height = "20px"
+                copy.style.filter = "invert(50%)"
+                copy.style.cursor = "pointer"
+
+                var href = document.querySelector("#" + post.id + " > .post_head > .float_right > strong > a").href
+
+                copy.onclick = () => {GM_setClipboard(href)}
+                link.onclick = () => {openInNewTab(href)}
+    
+                document.querySelector("#" + post.id + " > .post_head > .float_right > strong").remove()
+                document.querySelector("#" + post.id + " > .post_head > .float_right").append(link)
+                document.querySelector("#" + post.id + " > .post_head > .float_right").prepend(copy)
+            })
+
+            // remove the rate button functionality if the post is yours
+            document.querySelectorAll(".post").forEach(post => {
+                if (extractUIDfromPost(post) == uid) {
+
+                    var child = document.querySelector("#" + post.id + " > .post_content > div:nth-child(4)").children
+
+                    // Idk why I have to run it twice for it to work but I do :shrug:
+                    for (let i=0; i < child.length; i++) {
+                        if (child[i].style.minWidth != "") {
+                            child[i].children.item(0).href = "javascript:void(0)"
+                            child[i].children.item(0).onclick = null
+                        }
+                    }
+
+                    for (let i=0; i < child.length; i++) {
+                        if (child[i].style.minWidth != "") {
+                            child[i].children.item(0).href = "javascript:void(0)"
+                            child[i].children.item(0).onclick = null
+                        }
+                    }
+                }
+            })
+
+            // add the "add friend" button that adds the user to the buddy list
+            getAllNonSelfPosts().forEach(post => {
+                var image = document.createElement("img")
+                image.src = "https://cdn-icons-png.flaticon.com/512/2583/2583118.png"
+                image.style.width = "23px"
+                image.style.height = "20px"
+                image.style.filter = "invert(50%)"
+                image.style.cursor = "pointer"
+
+                var username = extractUsernamefromPost(post)
+
+                // the following filters are calculated by https://codepen.io/sosuke/pen/Pjoqqp
+                image.onclick = () => {
+                    fetch("usercp.php?action=do_editlists&add_username=" + username + "&my_post_key="+ my_post_key, { method: 'POST'}).then((res) => {
+                        if (res.ok) {
+                            image.style.filter = "invert(26%) sepia(77%) saturate(4352%) hue-rotate(83deg) brightness(93%) contrast(92%)"
+                            setTimeout(() => {
+                                image.style.filter = "invert(50%)"
+                            }, 2000);
+                        }
+                        else {
+                            image.style.filter = "invert(21%) sepia(25%) saturate(5820%) hue-rotate(339deg) brightness(106%) contrast(111%)"
+                            setTimeout(() => {
+                                image.style.filter = "invert(50%)"
+                            }, 2000);
+                        }
+                    })
+                }
+                document.querySelector("#" + post.id + "> .post_head > .float_right").append(image)
+            })
+
+            getAllNonSelfPosts().forEach(post => {
+                var image = document.createElement("img")
+                image.src = "https://cdn-icons-png.flaticon.com/512/1828/1828961.png"
+                image.style.width = "20px"
+                image.style.height = "20px"
+                image.style.filter = "invert(50%)"
+                image.style.cursor = "pointer"
+                image.style.paddingRight = "3px"
+
+                image.onclick = () => {
+                    MyBB.reputation(parseInt(extractUIDfromPost(post)))
+                }
+
+                document.querySelector("#" + post.id + "> .post_head > .float_right").prepend(image)
+            })
+        }
+
         // code that v3rm uses to indicate what tabs are collapsed or not, this is all of them collapsed
         const closed = 'cat_34|cat_8|cat_6|boardstats|cat_17|cat_27|cat_7|cat_3'
 
@@ -105,7 +232,7 @@ By: littlepriceonu#0001`, "background: linear-gradient(to right, #ab0000, #0f0d0
            setCookie("collapsed", closed, 365)
         }, false);
 
-        const injectCSS = (css, append) => {
+        function injectCSS(css, append) {
             let test = document.querySelector("#CustomCSS")
             if (test) {
                 if (append) {
@@ -123,7 +250,7 @@ By: littlepriceonu#0001`, "background: linear-gradient(to right, #ab0000, #0f0d0
 
             document.head.appendChild(el);
             return el;
-        };
+        }
 
         function setCookie(cname, cvalue, exdays) {
             const d = new Date();
@@ -167,6 +294,10 @@ By: littlepriceonu#0001`, "background: linear-gradient(to right, #ab0000, #0f0d0
             window.open(url, '_self').focus();
         }
 
+        function openInNewTab(url) {
+            window.open(url, '_blank').focus();
+        }
+
         var avatar = document.querySelector("#panel > div.user_avatar")
         var avatarimage = document.querySelector("#panel > div.user_avatar > img")
 
@@ -184,14 +315,10 @@ By: littlepriceonu#0001`, "background: linear-gradient(to right, #ab0000, #0f0d0
             if (data.ok) setUpAvatar("https://v3rmillion.net/uploads/avatars/avatar_" + uid + ".gif")
         })
 
-
-
         fetch("https://v3rmillion.net/uploads/avatars/avatar_" + uid + ".jpg").then((data) => {
             if (data.ok) setUpAvatar("https://v3rmillion.net/uploads/avatars/avatar_" + uid + ".jpg")
         })
         
-
-
         fetch("https://v3rmillion.net/uploads/avatars/avatar_" + uid + ".png").then((data) => {
             if (data.ok) setUpAvatar("https://v3rmillion.net/uploads/avatars/avatar_" + uid + ".png")
         })
@@ -265,6 +392,8 @@ By: littlepriceonu#0001`, "background: linear-gradient(to right, #ab0000, #0f0d0
 
         // black scroll bar
         injectCSS("body::-webkit-scrollbar { width: 16px; height: 16px;} body::-webkit-scrollbar-track { background-color: transparent !important; }  body::-webkit-scrollbar-thumb { background-color: #262323 !important; } body::-webkit-scrollbar-thumb:hover { background-color: #4f4e4e !important; }        ", true)
+
+        injectCSS("a.button.closed_button { text-align:center !important;}", true)
 
         // no bottom rounded (no work)
         //injectCSS('.tborder tbody tr:last-child>td:first-child {border-bottom-right-radius: 0;}', true)
