@@ -9,7 +9,6 @@
 // @exclude      *://*.v3rmillion.net/siterules.php
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=v3rmillion.net
 // @grant        GM_setClipboard
-// @updateURL    raw.githubusercontent.com/littlepriceonu/-Slightly-Better-V3rm/main/V1.js
 // @downloadURL  raw.githubusercontent.com/littlepriceonu/-Slightly-Better-V3rm/main/V1.js
 // ==/UserScript==
 
