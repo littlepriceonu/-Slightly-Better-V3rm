@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         (Slightly) Better V3rm
 // @namespace    https://github.com/littlepriceonu/-Slightly-Better-V3rm
-// @version      1.3
+// @version      1.31
 // @description  Better Styling For V3rmillion
 // @author       littlepriceonu#0001
 // @match        *://*.v3rmillion.net/*
@@ -53,6 +53,20 @@ By: littlepriceonu#0001`, "background: linear-gradient(to right, #ab0000, #0f0d0
                 otherDoc.innerHTML = text;
                 window.test = otherDoc
         });
+    }
+
+    function HasFireFoxFix(query, childclass) {
+        var returnArray = []
+
+        document.querySelectorAll(query).forEach(el => {
+            for (var i=0; i < el.children.length; i++) {
+                if (el.children[i].className.indexOf(childclass) > -1) {
+                    returnArray.push(el)
+                }
+            }
+        })
+        
+        return returnArray
     }
 
     function WaitForElement(selector) {
@@ -191,14 +205,30 @@ By: littlepriceonu#0001`, "background: linear-gradient(to right, #ab0000, #0f0d0
                 copy.style.filter = "invert(50%)"
                 copy.style.cursor = "pointer"
 
-                var href = document.querySelector("#" + post.id + " > .post_head > .float_right > strong > a").href
+                var href;
+                var skip = false;
 
-                copy.onclick = () => {GM_setClipboard(href)}
-                link.onclick = () => {openInNewTab(href)}
-    
-                document.querySelector("#" + post.id + " > .post_head > .float_right > strong").remove()
-                document.querySelector("#" + post.id + " > .post_head > .float_right").append(link)
-                document.querySelector("#" + post.id + " > .post_head > .float_right").prepend(copy)
+                try {
+                    href = document.querySelector("#" + post.id + " > .post_head > .float_right > strong > a").href
+                }
+                catch {
+                    console.log("better v3rm had a issue with grabbing the post link. Skipping the copy and link image placement.")
+                    console.log("this is a known error and will be patching in the future (hopefully :o). Falling back to default link)")
+                    skip = true;
+                }
+
+                if (!skip) {
+                    copy.onclick = () => {GM_setClipboard(href)}
+                    link.onclick = () => {openInNewTab(href)}
+                    
+                    document.querySelector("#" + post.id + " > .post_head > .float_right > strong").remove()
+                    document.querySelector("#" + post.id + " > .post_head > .float_right").append(link)
+                    document.querySelector("#" + post.id + " > .post_head > .float_right").prepend(copy)
+                }
+                else if (document.querySelector("#" + post.id + " > .post_head > .float_right > strong")) {
+                    document.querySelector("#" + post.id + " > .post_head > .float_right > strong").style.paddingLeft = "5px"
+                    document.querySelector("#" + post.id + " > .post_head > .float_right > strong").style.paddingRight = "8px"
+                }
             })
 
             // remove the rate button functionality if the post is yours
