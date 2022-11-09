@@ -133,10 +133,12 @@ By: littlepriceonu#0001`, "background: linear-gradient(to right, #ab0000, #0f0d0
     function start() {
 
         // steal the user's id from the "My Profile" link
+        var param;
+        const uid = -1;
         if (!checkNoPerms()) {
-        var param = new URLSearchParams(document.querySelector("#panel > div.ddm_anchor > div > a:nth-child(1)").href)
-        const uid = param.get('uid')
-        window.uid = uid
+            var param = new URLSearchParams(document.querySelector("#panel > div.ddm_anchor > div > a:nth-child(1)").href)
+            const uid = param.get('uid')
+            window.uid = uid
         }
 
         var settingsarray = {
@@ -361,9 +363,10 @@ By: littlepriceonu#0001`, "background: linear-gradient(to right, #ab0000, #0f0d0
         if (advert) advert.remove()
 
         // dumb links like "discord" and "upgrade"
-        document.querySelector("#bridge > div > ul > li:nth-child(5) > a").remove()
-        document.querySelector("#bridge > div > ul > li:nth-child(6) > a").remove()
-
+        if (!checkNoPerms()) { 
+            document.querySelector("#bridge > div > ul > li:nth-child(5) > a").remove()
+            document.querySelector("#bridge > div > ul > li:nth-child(6) > a").remove()
+        }
 
         // add the popup to the html
         var settingspopup = document.createElement("div")
@@ -517,14 +520,16 @@ By: littlepriceonu#0001`, "background: linear-gradient(to right, #ab0000, #0f0d0
         }
 
         // moving the pms and alerts button so it looks better
-        var PMs = document.querySelector("#panel > ul > li:nth-child(2)")
-        PMs.remove()
+        if (!checkNoPerms()) {
+            var PMs = document.querySelector("#panel > ul > li:nth-child(2)")
+            PMs.remove()
 
-        var alerts = document.querySelector("#panel > ul > li.alerts")
-        alerts.remove()
+            var alerts = document.querySelector("#panel > ul > li.alerts")
+            alerts.remove()
 
-        document.querySelector("#panel > ul").prepend(PMs)
-        document.querySelector("#panel > ul").prepend(alerts)
+            document.querySelector("#panel > ul").prepend(PMs)
+            document.querySelector("#panel > ul").prepend(alerts)
+        }
 
         function openInCurrentTab(url) {
             window.open(url, '_self').focus();
@@ -534,30 +539,38 @@ By: littlepriceonu#0001`, "background: linear-gradient(to right, #ab0000, #0f0d0
             window.open(url, '_blank').focus();
         }
 
-        var avatar = document.querySelector("#panel > div.user_avatar")
-        var avatarimage = document.querySelector("#panel > div.user_avatar > img")
-
-        function setUpAvatar(url) {
-            avatarimage.src = url
-            avatarimage.style.cursor = "pointer"
-            avatarimage.onclick = () => {
-                openInCurrentTab("https://v3rmillion.net/member.php?action=profile&uid=" + uid)
+        if (checkNoPerms()) {
+            if (document.querySelector(".welcome")) {
+                document.querySelector(".welcome").innerHTML = document.querySelector(".welcome").innerHTML.replace("Hello There, Guest!", "Guest, ")
             }
-    
-            avatar.classList.remove("hidden")   
         }
 
-        fetch("https://v3rmillion.net/uploads/avatars/avatar_" + uid + ".gif").then((data) => {
-            if (data.ok) setUpAvatar("https://v3rmillion.net/uploads/avatars/avatar_" + uid + ".gif")
-        })
+        if (!checkNoPerms()) {
+            var avatar = document.querySelector("#panel > div.user_avatar")
+            var avatarimage = document.querySelector("#panel > div.user_avatar > img")
 
-        fetch("https://v3rmillion.net/uploads/avatars/avatar_" + uid + ".jpg").then((data) => {
-            if (data.ok) setUpAvatar("https://v3rmillion.net/uploads/avatars/avatar_" + uid + ".jpg")
-        })
+            function setUpAvatar(url) {
+                avatarimage.src = url
+                avatarimage.style.cursor = "pointer"
+                avatarimage.onclick = () => {
+                    openInCurrentTab("https://v3rmillion.net/member.php?action=profile&uid=" + uid)
+                }
+    
+                avatar.classList.remove("hidden")   
+            }
+
+            fetch("https://v3rmillion.net/uploads/avatars/avatar_" + uid + ".gif").then((data) => {
+                if (data.ok) setUpAvatar("https://v3rmillion.net/uploads/avatars/avatar_" + uid + ".gif")
+            })
+
+            fetch("https://v3rmillion.net/uploads/avatars/avatar_" + uid + ".jpg").then((data) => {
+                if (data.ok) setUpAvatar("https://v3rmillion.net/uploads/avatars/avatar_" + uid + ".jpg")
+            })
         
-        fetch("https://v3rmillion.net/uploads/avatars/avatar_" + uid + ".png").then((data) => {
-            if (data.ok) setUpAvatar("https://v3rmillion.net/uploads/avatars/avatar_" + uid + ".png")
-        })
+            fetch("https://v3rmillion.net/uploads/avatars/avatar_" + uid + ".png").then((data) => {
+                if (data.ok) setUpAvatar("https://v3rmillion.net/uploads/avatars/avatar_" + uid + ".png")
+            })
+        }
 
         document.querySelector("#footer > ul:nth-child(1) > h2").innerText = "Important"
         document.querySelector("#footer > ul:nth-child(2) > h2").innerText = "Other Links"
