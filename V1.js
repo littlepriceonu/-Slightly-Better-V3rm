@@ -46,13 +46,18 @@ By: littlepriceonu#0001`, "background: linear-gradient(to right, #ab0000, #0f0d0
     
     // https://stackoverflow.com/questions/48759219/access-dom-from-a-different-html-file-with-js
     function LoadWebDom(url) {
-        fetch(url)
-            .then((response) => response.text())
+        return new Promise((resolve, reject) => {
+            fetch(url)
+            .then((response) => {
+                if (!response.ok) reject(response)
+                return response.text()
+            })
             .then((text) => {
                 const otherDoc = document.implementation.createHTMLDocument().documentElement;
                 otherDoc.innerHTML = text;
-                window.test = otherDoc
+                resolve(otherDoc)
         });
+        })
     }
 
     function HasFireFoxFix(query, childclass) {
