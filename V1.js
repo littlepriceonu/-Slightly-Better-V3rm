@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         (Slightly) Better V3rm
 // @namespace    https://github.com/littlepriceonu/-Slightly-Better-V3rm
-// @version      1.31
+// @version      1.32
 // @description  Better Styling For V3rmillion
 // @author       littlepriceonu#0001
 // @match        *://*.v3rmillion.net/*
@@ -144,8 +144,8 @@ By: littlepriceonu#0001`, "background: linear-gradient(to right, #ab0000, #0f0d0
             closeAllSections: true,
         }
 
-        if (getCookie("BetterV3rmSettings") != "") {
-            settingsarray = JSON.parse(getCookie("BetterV3rmSettings"))
+        if (Cookie.get("BetterV3rmSettings") != "") {
+            settingsarray = JSON.parse(Cookie.get("BetterV3rmSettings"))
         }
 
         // page specific features
@@ -328,10 +328,10 @@ By: littlepriceonu#0001`, "background: linear-gradient(to right, #ab0000, #0f0d0
         // make it so next time its all closed
         window.addEventListener("beforeunload", function(e){
             if (settingsarray.closeAllSections) {
-                setCookie("collapsed", closed.replace("|", "%7C"), 365)
+                Cookie.set("collapsed", closed.replaceAll("|", "%7C"))
             }
 
-            setCookie("BetterV3rmSettings", JSON.stringify(settingsarray), 365)
+            Cookie.set("BetterV3rmSettings", JSON.stringify(settingsarray))
         });
 
         function injectCSS(css, append) {
@@ -352,29 +352,6 @@ By: littlepriceonu#0001`, "background: linear-gradient(to right, #ab0000, #0f0d0
 
             document.head.appendChild(el);
             return el;
-        }
-
-        function setCookie(cname, cvalue, exdays) {
-            const d = new Date();
-            d.setTime(d.getTime() + (exdays*24*60*60*1000));
-            let expires = "expires="+ d.toUTCString();
-            document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
-        }
-
-        function getCookie(cname) {
-            let name = cname + "=";
-            let decodedCookie = decodeURIComponent(document.cookie);
-            let ca = decodedCookie.split(';');
-            for(let i = 0; i <ca.length; i++) {
-              let c = ca[i];
-              while (c.charAt(0) == ' ') {
-                c = c.substring(1);
-              }
-              if (c.indexOf(name) == 0) {
-                return c.substring(name.length, c.length);
-              }
-            }
-            return "";
         }
 
         // stupid advertise with us
