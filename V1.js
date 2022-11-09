@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         (Slightly) Better V3rm
 // @namespace    https://github.com/littlepriceonu/-Slightly-Better-V3rm
-// @version      1.34
+// @version      1.35
 // @description  Better Styling For V3rmillion
 // @author       littlepriceonu#0001
 // @match        *://*.v3rmillion.net/*
@@ -133,9 +133,11 @@ By: littlepriceonu#0001`, "background: linear-gradient(to right, #ab0000, #0f0d0
     function start() {
 
         // steal the user's id from the "My Profile" link
+        if (!checkNoPerms()) {
         var param = new URLSearchParams(document.querySelector("#panel > div.ddm_anchor > div > a:nth-child(1)").href)
         const uid = param.get('uid')
         window.uid = uid
+        }
 
         var settingsarray = {
             enableGradients: true,
@@ -144,7 +146,7 @@ By: littlepriceonu#0001`, "background: linear-gradient(to right, #ab0000, #0f0d0
             closeAllSections: true,
         }
 
-        if (Cookie.get("BetterV3rmSettings") != "") {
+        if (Cookie.get("BetterV3rmSettings") != undefined) {
             settingsarray = JSON.parse(Cookie.get("BetterV3rmSettings"))
         }
 
