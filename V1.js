@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         (Slightly) Better V3rm
 // @namespace    https://github.com/littlepriceonu/-Slightly-Better-V3rm
-// @version      1.32
+// @version      1.33
 // @description  Better Styling For V3rmillion
 // @author       littlepriceonu#0001
 // @match        *://*.v3rmillion.net/*
@@ -323,12 +323,12 @@ By: littlepriceonu#0001`, "background: linear-gradient(to right, #ab0000, #0f0d0
         }
 
         // code that v3rm uses to indicate what tabs are collapsed or not, this is all of them collapsed
-        const closed = 'cat_34|cat_8|cat_6|boardstats|cat_17|cat_27|cat_7|cat_3'
+        const closed = 'cat_34|cat_8|cat_6|boardstats|cat_17|cat_27|cat_7|cat_3|cat_34|cat_8|cat_7|cat_27|cat_17|cat_6|boardstats|cat_3'
 
         // make it so next time its all closed
         window.addEventListener("beforeunload", function(e){
             if (settingsarray.closeAllSections) {
-                Cookie.set("collapsed", closed.replaceAll("|", "%7C"))
+                Cookie.set("collapsed", closed)
             }
 
             Cookie.set("BetterV3rmSettings", JSON.stringify(settingsarray))
