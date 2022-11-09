@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         (Slightly) Better V3rm
 // @namespace    https://github.com/littlepriceonu/-Slightly-Better-V3rm
-// @version      1.33
+// @version      1.34
 // @description  Better Styling For V3rmillion
 // @author       littlepriceonu#0001
 // @match        *://*.v3rmillion.net/*
@@ -573,6 +573,7 @@ By: littlepriceonu#0001`, "background: linear-gradient(to right, #ab0000, #0f0d0
             img.addEventListener("mouseleave", ()=>{mouseOver = false})
         })
 
+        try {
         document.querySelectorAll(".thead:has(div.expcolimage)").forEach(thead => {
             thead.style.cursor = "pointer"
             thead.onclick = ()=>{
@@ -586,7 +587,23 @@ By: littlepriceonu#0001`, "background: linear-gradient(to right, #ab0000, #0f0d0
                     }
                 }
             }
-        })
+        })}
+        catch {
+            HasFireFoxFix(".thead", "expcolimage").forEach(thead => {
+                thead.style.cursor = "pointer"
+                thead.onclick = ()=>{
+                    for(var i=0; i < thead.children.length; i++) {
+                        let el = thead.children[i]
+                        if (el.className.indexOf("expcolimage") > -1) {
+                            if (!mouseOver) {
+                                el.childNodes[0].click()
+                            }
+                            break;
+                        }
+                    }
+                }
+            })
+        }
 
         // CSS stuff from here
 
