@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         (Slightly) Better V3rm
 // @namespace    https://github.com/littlepriceonu/-Slightly-Better-V3rm
-// @version      1.35
+// @version      1.36
 // @description  Better Styling For V3rmillion
 // @author       littlepriceonu#0001
 // @match        *://*.v3rmillion.net/*
@@ -10,6 +10,7 @@
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=v3rmillion.net
 // @grant        GM_setClipboard
 // @downloadURL  raw.githubusercontent.com/littlepriceonu/-Slightly-Better-V3rm/main/V1.js
+// @updateURL raw.githubusercontent.com/littlepriceonu/-Slightly-Better-V3rm/main/V1.js
 // ==/UserScript==
 
 // Todo
@@ -139,10 +140,10 @@ By: littlepriceonu#0001`, "background: linear-gradient(to right, #ab0000, #0f0d0
 
         // steal the user's id from the "My Profile" link
         var param;
-        const uid = -1;
+        var uid = -1;
         if (!checkNoPerms()) {
             var param = new URLSearchParams(document.querySelector("#panel > div.ddm_anchor > div > a:nth-child(1)").href)
-            const uid = param.get('uid')
+            uid = param.get('uid')
             window.uid = uid
         }
 
