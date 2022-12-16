@@ -139,7 +139,6 @@ By: littlepriceonu#0001`, "background: linear-gradient(to right, #ab0000, #0f0d0
     function start() {
 
         // steal the user's id from the "My Profile" link
-        var param;
         var uid = -1;
         if (!checkNoPerms()) {
             var param = new URLSearchParams(document.querySelector("#panel > div.ddm_anchor > div > a:nth-child(1)").href)
