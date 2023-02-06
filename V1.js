@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         (Slightly) Better V3rm
 // @namespace    https://github.com/littlepriceonu/-Slightly-Better-V3rm
-// @version      1.33
+// @version      1.36
 // @description  Better Styling For V3rmillion
 // @author       littlepriceonu#0001
 // @match        *://*.v3rmillion.net/*
@@ -47,13 +47,18 @@ By: littlepriceonu#0001`, "background: linear-gradient(to right, #ab0000, #0f0d0
     
     // https://stackoverflow.com/questions/48759219/access-dom-from-a-different-html-file-with-js
     function LoadWebDom(url) {
-        fetch(url)
-            .then((response) => response.text())
+        return new Promise((resolve, reject) => {
+            fetch(url)
+            .then((response) => {
+                if (!response.ok) reject(response)
+                return response.text()
+            })
             .then((text) => {
                 const otherDoc = document.implementation.createHTMLDocument().documentElement;
                 otherDoc.innerHTML = text;
-                window.test = otherDoc
+                resolve(otherDoc)
         });
+        })
     }
 
     function HasFireFoxFix(query, childclass) {
@@ -134,12 +139,9 @@ By: littlepriceonu#0001`, "background: linear-gradient(to right, #ab0000, #0f0d0
     function start() {
 
         // steal the user's id from the "My Profile" link
-
-        var param
-        var uid
-
+        var uid = -1;
         if (!checkNoPerms()) {
-            param = new URLSearchParams(document.querySelector("#panel > div.ddm_anchor > div > a:nth-child(1)").href)
+            var param = new URLSearchParams(document.querySelector("#panel > div.ddm_anchor > div > a:nth-child(1)").href)
             uid = param.get('uid')
             window.uid = uid
         }
@@ -366,9 +368,10 @@ By: littlepriceonu#0001`, "background: linear-gradient(to right, #ab0000, #0f0d0
         if (advert) advert.remove()
 
         // dumb links like "discord" and "upgrade"
-        document.querySelector("#bridge > div > ul > li:nth-child(5) > a").remove()
-        document.querySelector("#bridge > div > ul > li:nth-child(6) > a").remove()
-
+        if (!checkNoPerms()) { 
+            document.querySelector("#bridge > div > ul > li:nth-child(5) > a").remove()
+            document.querySelector("#bridge > div > ul > li:nth-child(6) > a").remove()
+        }
 
         // add the popup to the html
         var settingspopup = document.createElement("div")
@@ -522,14 +525,16 @@ By: littlepriceonu#0001`, "background: linear-gradient(to right, #ab0000, #0f0d0
         }
 
         // moving the pms and alerts button so it looks better
-        var PMs = document.querySelector("#panel > ul > li:nth-child(2)")
-        PMs.remove()
+        if (!checkNoPerms()) {
+            var PMs = document.querySelector("#panel > ul > li:nth-child(2)")
+            PMs.remove()
 
-        var alerts = document.querySelector("#panel > ul > li.alerts")
-        alerts.remove()
+            var alerts = document.querySelector("#panel > ul > li.alerts")
+            alerts.remove()
 
-        document.querySelector("#panel > ul").prepend(PMs)
-        document.querySelector("#panel > ul").prepend(alerts)
+            document.querySelector("#panel > ul").prepend(PMs)
+            document.querySelector("#panel > ul").prepend(alerts)
+        }
 
         function openInCurrentTab(url) {
             window.open(url, '_self').focus();
@@ -539,17 +544,23 @@ By: littlepriceonu#0001`, "background: linear-gradient(to right, #ab0000, #0f0d0
             window.open(url, '_blank').focus();
         }
 
-        var avatar = document.querySelector("#panel > div.user_avatar")
-        var avatarimage = document.querySelector("#panel > div.user_avatar > img")
+        if (checkNoPerms()) {
+            if (document.querySelector(".welcome")) {
+                document.querySelector(".welcome").innerHTML = document.querySelector(".welcome").innerHTML.replace("Hello There, Guest!", "Guest, ")
+            }
+        }
 
         if (!checkNoPerms()) {
+            var avatar = document.querySelector("#panel > div.user_avatar")
+            var avatarimage = document.querySelector("#panel > div.user_avatar > img")
+
             function setUpAvatar(url) {
                 avatarimage.src = url
                 avatarimage.style.cursor = "pointer"
                 avatarimage.onclick = () => {
                     openInCurrentTab("https://v3rmillion.net/member.php?action=profile&uid=" + uid)
                 }
-            
+    
                 avatar.classList.remove("hidden")   
             }
 
@@ -560,7 +571,7 @@ By: littlepriceonu#0001`, "background: linear-gradient(to right, #ab0000, #0f0d0
             fetch("https://v3rmillion.net/uploads/avatars/avatar_" + uid + ".jpg").then((data) => {
                 if (data.ok) setUpAvatar("https://v3rmillion.net/uploads/avatars/avatar_" + uid + ".jpg")
             })
-
+        
             fetch("https://v3rmillion.net/uploads/avatars/avatar_" + uid + ".png").then((data) => {
                 if (data.ok) setUpAvatar("https://v3rmillion.net/uploads/avatars/avatar_" + uid + ".png")
             })
@@ -582,6 +593,7 @@ By: littlepriceonu#0001`, "background: linear-gradient(to right, #ab0000, #0f0d0
             img.addEventListener("mouseleave", ()=>{mouseOver = false})
         })
 
+        try {
         document.querySelectorAll(".thead:has(div.expcolimage)").forEach(thead => {
             thead.style.cursor = "pointer"
             thead.onclick = ()=>{
@@ -595,7 +607,23 @@ By: littlepriceonu#0001`, "background: linear-gradient(to right, #ab0000, #0f0d0
                     }
                 }
             }
-        })
+        })}
+        catch {
+            HasFireFoxFix(".thead", "expcolimage").forEach(thead => {
+                thead.style.cursor = "pointer"
+                thead.onclick = ()=>{
+                    for(var i=0; i < thead.children.length; i++) {
+                        let el = thead.children[i]
+                        if (el.className.indexOf("expcolimage") > -1) {
+                            if (!mouseOver) {
+                                el.childNodes[0].click()
+                            }
+                            break;
+                        }
+                    }
+                }
+            })
+        }
 
         // CSS stuff from here
 
