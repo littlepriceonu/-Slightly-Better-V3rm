@@ -10,6 +10,7 @@
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=v3rmillion.net
 // @grant        GM_setClipboard
 // @downloadURL  raw.githubusercontent.com/littlepriceonu/-Slightly-Better-V3rm/main/V1.js
+// @updateURL    raw.githubusercontent.com/littlepriceonu/-Slightly-Better-V3rm/main/V1.js
 // ==/UserScript==
 
 // Todo
@@ -133,9 +134,15 @@ By: littlepriceonu#0001`, "background: linear-gradient(to right, #ab0000, #0f0d0
     function start() {
 
         // steal the user's id from the "My Profile" link
-        var param = new URLSearchParams(document.querySelector("#panel > div.ddm_anchor > div > a:nth-child(1)").href)
-        const uid = param.get('uid')
-        window.uid = uid
+
+        var param
+        var uid
+
+        if (!checkNoPerms()) {
+            param = new URLSearchParams(document.querySelector("#panel > div.ddm_anchor > div > a:nth-child(1)").href)
+            uid = param.get('uid')
+            window.uid = uid
+        }
 
         var settingsarray = {
             enableGradients: true,
@@ -144,7 +151,7 @@ By: littlepriceonu#0001`, "background: linear-gradient(to right, #ab0000, #0f0d0
             closeAllSections: true,
         }
 
-        if (Cookie.get("BetterV3rmSettings") != "") {
+        if (Cookie.get("BetterV3rmSettings") != undefined) {
             settingsarray = JSON.parse(Cookie.get("BetterV3rmSettings"))
         }
 
@@ -535,27 +542,29 @@ By: littlepriceonu#0001`, "background: linear-gradient(to right, #ab0000, #0f0d0
         var avatar = document.querySelector("#panel > div.user_avatar")
         var avatarimage = document.querySelector("#panel > div.user_avatar > img")
 
-        function setUpAvatar(url) {
-            avatarimage.src = url
-            avatarimage.style.cursor = "pointer"
-            avatarimage.onclick = () => {
-                openInCurrentTab("https://v3rmillion.net/member.php?action=profile&uid=" + uid)
+        if (!checkNoPerms()) {
+            function setUpAvatar(url) {
+                avatarimage.src = url
+                avatarimage.style.cursor = "pointer"
+                avatarimage.onclick = () => {
+                    openInCurrentTab("https://v3rmillion.net/member.php?action=profile&uid=" + uid)
+                }
+            
+                avatar.classList.remove("hidden")   
             }
-    
-            avatar.classList.remove("hidden")   
+
+            fetch("https://v3rmillion.net/uploads/avatars/avatar_" + uid + ".gif").then((data) => {
+                if (data.ok) setUpAvatar("https://v3rmillion.net/uploads/avatars/avatar_" + uid + ".gif")
+            })
+
+            fetch("https://v3rmillion.net/uploads/avatars/avatar_" + uid + ".jpg").then((data) => {
+                if (data.ok) setUpAvatar("https://v3rmillion.net/uploads/avatars/avatar_" + uid + ".jpg")
+            })
+
+            fetch("https://v3rmillion.net/uploads/avatars/avatar_" + uid + ".png").then((data) => {
+                if (data.ok) setUpAvatar("https://v3rmillion.net/uploads/avatars/avatar_" + uid + ".png")
+            })
         }
-
-        fetch("https://v3rmillion.net/uploads/avatars/avatar_" + uid + ".gif").then((data) => {
-            if (data.ok) setUpAvatar("https://v3rmillion.net/uploads/avatars/avatar_" + uid + ".gif")
-        })
-
-        fetch("https://v3rmillion.net/uploads/avatars/avatar_" + uid + ".jpg").then((data) => {
-            if (data.ok) setUpAvatar("https://v3rmillion.net/uploads/avatars/avatar_" + uid + ".jpg")
-        })
-        
-        fetch("https://v3rmillion.net/uploads/avatars/avatar_" + uid + ".png").then((data) => {
-            if (data.ok) setUpAvatar("https://v3rmillion.net/uploads/avatars/avatar_" + uid + ".png")
-        })
 
         document.querySelector("#footer > ul:nth-child(1) > h2").innerText = "Important"
         document.querySelector("#footer > ul:nth-child(2) > h2").innerText = "Other Links"
